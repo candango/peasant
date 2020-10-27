@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 
 class PeasantTransport(object):
 
+    _peasant: 'Peasant'
+
     def __init__(self):
         self._peasant = None
 
@@ -32,26 +34,31 @@ class PeasantTransport(object):
     def peasant(self, peasant):
         self._peasant = peasant
 
+    def get(self, path, **kwargs):
+        raise NotImplementedError
+
+    def head(self, path, **kwargs):
+        raise NotImplementedError
+
+    def post(self, path, **kwargs):
+        raise NotImplementedError
+
+    def post_as_get(self, path, **kwargs):
+        raise NotImplementedError
+
     def set_directory(self):
         raise NotImplementedError
 
     def new_nonce(self):
         raise NotImplementedError
 
-    def get(self, path, headers):
-        raise NotImplementedError
-
-    def post(self, path, headers):
-        raise NotImplementedError
-
-    def head(self, path, headers=None):
-        raise NotImplementedError
-
-    def post(self, path, body, headers=None):
+    def is_registered(self):
         raise NotImplementedError
 
 
 class Peasant(object):
+
+    _transport: PeasantTransport
 
     def __init__(self, transport):
         self._directory_cache = None
@@ -88,6 +95,7 @@ class AsyncPeasant(Peasant):
         if self._directory_cache is None:
             future = self.transport.set_directory()
             if future is not None:
-                logger.debug("Running setting directory cache asynchronously.")
+                logger.debug("Running transport set directory cache "
+                             "asynchronously.")
                 await future
         return self._directory_cache
