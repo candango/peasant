@@ -15,7 +15,7 @@
 # limitations under the License.
 
 __author__ = "Flavio Goncalves Garcia <piraz@candango.org>"
-__version__ = (0, 1)
+__version__ = (0, 3)
 __licence__ = "Apache License V2.0"
 
 
