@@ -31,6 +31,14 @@ class NonceServiceMixin:
         """
         raise NotImplementedError
 
+    def clear(self, **kwargs):
+        """ Clears a nonce sent to the request
+        :param kwargs:
+        :key request: The Http request being serviced.
+        :key nonce: The nonce being consumed by the server.
+        """
+        raise NotImplementedError
+
     def block_request(self, **kwargs):
         raise NotImplementedError
 
@@ -52,7 +60,9 @@ def nonced(method):
             nonce = self.nonce_service.from_request(request=self)
             if self.nonce_service.consume(
                     request=self, nonce=nonce) is not None:
-                return method(self, *args, **kwargs)
+                retval = method(self, *args, **kwargs)
+                self.nonce_service.clear(request=self, nonce=nonce)
+                return retval
         else:
             self.nonce_service.block_request(request=self)
     return wrapper
