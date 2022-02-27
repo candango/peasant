@@ -1,2 +1,2 @@
 behave==1.2.6
-firenado[all]==0.2.2
+firenado[all]>=0.2.2

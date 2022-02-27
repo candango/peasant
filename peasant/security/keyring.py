@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 #
-# Copyright 2020 Flavio Goncalves Garcia
+# Copyright 2020-2022 Flávio Gonçalves Garcia
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,48 +14,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import MINIMUM_KEY_SIZE
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric.ec import (
-    EllipticCurvePrivateKey, EllipticCurvePublicKey
-)
-from cryptography.hazmat.primitives.asymmetric.rsa import (
-    RSAPrivateKey, RSAPublicKey
-)
-from cryptography.hazmat.primitives.serialization import (
-    load_pem_private_key,
-    load_pem_public_key,
-    Encoding,
-    PrivateFormat,
-    PublicFormat,
-    NoEncryption,
-)
-
+from .rsa import MINIMUM_KEY_SIZE
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 def generate_key(**kwargs):
-    size = kwargs.get("size", MINIMUM_KEY_SIZE)
-    curve = kwargs.get("curve")
-    _type = kwargs.get('type', "rsa")
+    _type = kwargs.get("type", "rsa")
 
     if _type.lower() == "rsa":
         from .rsa import generate_key
-        return generate_key(size)
+        return generate_key(**kwargs)
     elif _type.lower() == "ec":
-        if curve:
-            from .ec import generate_key
-            return generate_key(curve)
-        else:
-            logger.warning("Please inform a curve in order to generate an "
-                           "Elliptical Curve key.")
-            return None
+        from .ec import generate_key
+        return generate_key(**kwargs)
     raise NotImplementedError
 
 
 def pem_to_private_key(data):
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives.asymmetric.ec import (
+        EllipticCurvePrivateKey
+    )
+    from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+    from cryptography.hazmat.primitives.serialization import (
+        load_pem_private_key
+    )
     """
     Load a PEM-encoded private key.
     """
@@ -69,6 +54,14 @@ def pem_to_private_key(data):
 
 
 def pem_to_public_key(data):
+    from cryptography.hazmat.backends import default_backend
+    from cryptography.hazmat.primitives.asymmetric.ec import (
+        EllipticCurvePublicKey
+    )
+    from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
+    from cryptography.hazmat.primitives.serialization import (
+        load_pem_public_key
+    )
     """ Load a PEM-encoded public key.
 
     :param data:
@@ -87,6 +80,15 @@ def key_to_pem(key):
     """
     Export a private key to PEM format.
     """
+    from cryptography.hazmat.primitives.asymmetric.rsa import (
+        RSAPublicKey
+    )
+    from cryptography.hazmat.primitives.serialization import (
+        Encoding,
+        PrivateFormat,
+        PublicFormat,
+        NoEncryption,
+    )
     if hasattr(key, "private_bytes"):
         return key.private_bytes(Encoding.PEM,
                                  PrivateFormat.TraditionalOpenSSL,
