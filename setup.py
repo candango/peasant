@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2020 Flavio Garcia
+# Copyright 2020-2024 Flavio Garcia
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,6 +57,10 @@ setup(
     url="https://github.com/candango/peasant",
     author=peasant.get_author(),
     author_email=peasant.get_author_email(),
+    extras_require={
+        'all': resolve_requires("requirements/all.txt"),
+        'tornado': resolve_requires("requirements/tornado.txt"),
+    },
     classifiers=[
         "Development Status :: 1 - Planning",
         "License :: OSI Approved :: Apache Software License",
@@ -65,15 +69,17 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries :: Application Frameworks"
     ],
     packages=find_packages(),
     package_dir={'peasant': "peasant"},
+    python_requires=">= 3.8",
     include_package_data=True,
     install_requires=resolve_requires("requirements/basic.txt")
 )
