@@ -14,25 +14,28 @@
 
 from firenado.testing import TornadoAsyncTestCase
 from firenado.launcher import ProcessLauncher
+from peasant.client import TornadoTransport
 from tests import chdir_fixture_app, PROJECT_ROOT
-from tornado.httpclient import AsyncHTTPClient
 from tornado.testing import gen_test
 
 
 class TornadoTransportTestCase(TornadoAsyncTestCase):
     """ Tornado based client test case. """
 
-    def get_launcher(self):
+    def get_launcher(self) -> ProcessLauncher:
         application_dir = chdir_fixture_app("bastiontest")
         return ProcessLauncher(
             dir=application_dir, path=PROJECT_ROOT)
 
+    def setUp(self) -> None:
+        super().setUp()
+        self.transport = TornadoTransport(
+                f"http://localhost:{self.http_port()}")
+
     @gen_test
     async def test_get(self):
-        http_client = AsyncHTTPClient()
         try:
-            response = await http_client.fetch(
-                    f"http://localhost:{self.http_port()}/")
+            response = await self.transport.get("/")
         except Exception as e:
             raise e
         self.assertEqual(response.body, b"IndexHandler output")
