@@ -15,11 +15,12 @@
 import copy
 import logging
 from peasant import get_version
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 
 
-class PeasantTransport(object):
+class PeasantTransport:
 
     _peasant: "Peasant"
 
@@ -98,10 +99,15 @@ class AsyncPeasant(Peasant):
         return self._directory_cache
 
 
+tornado_installed = False
 try:
     from tornado.httpclient import HTTPRequest
+    from tornado import version as tornado_version
+    from tornado.httputil import url_concat
+    from tornado.httpclient import AsyncHTTPClient, HTTPClientError
+    tornado_installed = True
 
-    def get_request(url, **kwargs):
+    def get_tornado_request(url, **kwargs):
         """ Return a HTTPRequest to help with AsyncHTTPClient and HTTPClient
         execution. The HTTPRequest will use the provided url combined with path
         if provided. The HTTPRequest method will be GET by default and can be
@@ -124,7 +130,6 @@ try:
             url = f"{url}/"
         if path is not None and path != "/":
             url = f"{url}{path}" % ()
-        print(url)
         request = HTTPRequest(url, method=method)
         if form_urlencoded:
             request.headers.add("Content-Type",
@@ -134,57 +139,70 @@ except ImportError:
     pass
 
 
-try:
-    from tornado import version as tornado_version
-    from tornado.httputil import url_concat
-    from tornado.httpclient import AsyncHTTPClient, HTTPClientError
-    from urllib.parse import urlencode
+class TornadoTransport(PeasantTransport):
 
-    class TornadoTransport(PeasantTransport):
+    def __init__(self, bastion_address):
+        super().__init__()
+        if not tornado_installed:
+            logger.warn("TornadoTransport cannot be used without tornado "
+                        "installed.\nIt is necessary to install peasant "
+                        "with extras modifiers all or tornado.\n\n Ex: pip "
+                        "install peasant[all] or pip install peasant[tornado]"
+                        "\n\nInstalling tornado manually will also work.\n")
+            raise NotImplementedError
+        self._client = AsyncHTTPClient()
+        self._bastion_address = bastion_address
+        self._directory = None
+        self.user_agent = (f"Peasant/{get_version()}"
+                           f"Tornado/{tornado_version}")
+        self._basic_headers = {
+            'User-Agent': self.user_agent
+        }
 
-        def __init__(self, bastion_address):
-            super().__init__()
-            self._client = AsyncHTTPClient()
-            self._bastion_address = bastion_address
-            self._directory = None
-            self.user_agent = (f"Peasant/{get_version()}"
-                               f"Tornado/{tornado_version}")
-            self._basic_headers = {
-                'User-Agent': self.user_agent
-            }
+    def _get_path(self, path, **kwargs):
+        query_string = kwargs.get('query_string')
+        if query_string:
+            path = url_concat(path, query_string)
 
-        async def get(self, path, **kwargs):
-            headers = kwargs.get('headers')
-            query_string = kwargs.get('query_string')
-            if query_string:
-                path = url_concat(path, query_string)
-            request = get_request(self._bastion_address, path=path)
-            if headers:
-                request.headers.update(headers)
-            return await self._client.fetch(request)
+    def _get_headers(self, **kwargs):
+        headers = copy.deepcopy(self._basic_headers)
+        _headers = kwargs.get('headers')
+        if _headers:
+            headers.update(_headers)
+        return headers
 
-        async def head(self, path, **kwargs):
-            headers = kwargs.get('headers')
-            request = get_request(path, method="HEAD")
-            _headers = copy.deepcopy(self._basic_headers)
-            if headers:
-                _headers.update(headers)
-            request.headers.update(_headers)
-            return await self._client.fetch(request)
+    async def get(self, path, **kwargs):
+        path = self._get_path(path, **kwargs)
+        request = get_tornado_request(self._bastion_address, path=path)
+        headers = self._get_headers(**kwargs)
+        request.headers.update(headers)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            result = error.response
+        return result
 
-        async def post(self, path, **kwargs):
-            headers = kwargs.get('headers')
-            form_data = kwargs.get("form_data", {})
-            request = get_request(path, method="POST", form_urlencoded=True)
-            _headers = copy.deepcopy(self._basic_headers)
-            if headers:
-                _headers.update(headers)
-            request.headers.update(_headers)
-            request.body = urlencode(form_data)
-            try:
-                result = await self._client.fetch(request)
-            except HTTPClientError as error:
-                result = error.response
-            return result
-except ImportError:
-    pass
+    async def head(self, path, **kwargs):
+        path = self._get_path(path, **kwargs)
+        request = get_tornado_request(path, method="HEAD")
+        headers = self._get_headers(**kwargs)
+        request.headers.update(headers)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            result = error.response
+        return result
+
+    async def post(self, path, **kwargs):
+        path = self._get_path(path, **kwargs)
+        form_data = kwargs.get("form_data", {})
+        request = get_tornado_request(path, method="POST",
+                                      form_urlencoded=True)
+        headers = self._get_headers(**kwargs)
+        request.headers.update(headers)
+        request.body = urlencode(form_data)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            result = error.response
+        return result
