@@ -1,2 +1,2 @@
-cartola>=0.14
-cryptography==36.0.1
+cartola>=0.18
+cryptography==42.0.5

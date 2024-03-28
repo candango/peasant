@@ -1,4 +1,6 @@
-# Copyright 2020 Flavio Goncalves Garcia
+#!/usr/bin/env python
+#
+# Copyright 2020-2024 Flavio Garcia
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-Feature: Replay Nonce
+# print current directory
+import unittest
+from tests import tornado_test
 
-  Scenario: Serve a new nonce
-    # Enter steps here
-    Given We have a newNonce url from the directory
-    When We request nonce from the server
-    Then The server provides nonce in response headers
+
+def suite():
+    testLoader = unittest.TestLoader()
+    alltests = unittest.TestSuite()
+    alltests.addTests(testLoader.loadTestsFromModule(tornado_test))
+    return alltests
+
+
+if __name__ == "__main__":
+    runner = unittest.TextTestRunner(verbosity=3)
+    result = runner.run(suite())
+    if not result.wasSuccessful():
+        exit(2)
