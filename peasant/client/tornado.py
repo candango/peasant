@@ -15,89 +15,10 @@
 import copy
 import logging
 from peasant import get_version
+from peasant.client.transport import Transport
 from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
-
-
-class PeasantTransport:
-
-    _peasant: "Peasant"
-
-    @property
-    def peasant(self):
-        return self._peasant
-
-    @peasant.setter
-    def peasant(self, peasant: "Peasant"):
-        self._peasant = peasant
-
-    def get(self, path, **kwargs):
-        raise NotImplementedError
-
-    def head(self, path, **kwargs):
-        raise NotImplementedError
-
-    def post(self, path, **kwargs):
-        raise NotImplementedError
-
-    def post_as_get(self, path, **kwargs):
-        raise NotImplementedError
-
-    def set_directory(self):
-        raise NotImplementedError
-
-    def new_nonce(self):
-        raise NotImplementedError
-
-    def is_registered(self):
-        raise NotImplementedError
-
-
-class Peasant(object):
-
-    _transport: PeasantTransport
-
-    def __init__(self, transport):
-        self._directory_cache = None
-        self._transport = transport
-        self._transport.peasant = self
-
-    @property
-    def directory_cache(self):
-        return self._directory_cache
-
-    @directory_cache.setter
-    def directory_cache(self, directory_cache):
-        self._directory_cache = directory_cache
-
-    @property
-    def transport(self):
-        return self._transport
-
-    def directory(self):
-        if self.directory_cache is None:
-            self.transport.set_directory()
-        return self.directory_cache
-
-    def new_nonce(self):
-        return self.transport.new_nonce()
-
-
-class AsyncPeasant(Peasant):
-
-    def __init__(self, transport):
-        super(AsyncPeasant, self).__init__(transport)
-
-    async def directory(self):
-        if self._directory_cache is None:
-            future = self.transport.set_directory()
-            if future is not None:
-                logger.debug("Running transport set directory cache "
-                             "asynchronously.")
-                await future
-        return self._directory_cache
-
 
 tornado_installed = False
 try:
@@ -139,7 +60,7 @@ except ImportError:
     pass
 
 
-class TornadoTransport(PeasantTransport):
+class TornadoTransport(Transport):
 
     def __init__(self, bastion_address):
         super().__init__()

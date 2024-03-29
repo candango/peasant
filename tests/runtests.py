@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# print current directory
 import unittest
 from tests import tornado_test
 
