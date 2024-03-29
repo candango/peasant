@@ -14,7 +14,7 @@
 
 from firenado.testing import TornadoAsyncTestCase
 from firenado.launcher import ProcessLauncher
-from peasant.client.tornado import TornadoTransport
+from peasant.client.transport_tornado import TornadoTransport
 from tests import chdir_fixture_app, PROJECT_ROOT
 from tornado.testing import gen_test
 
