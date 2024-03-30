@@ -15,13 +15,14 @@
 # limitations under the License.
 
 import unittest
-from tests import tornado_test
+from tests import tornado_test, transport_test
 
 
 def suite():
     testLoader = unittest.TestLoader()
     alltests = unittest.TestSuite()
     alltests.addTests(testLoader.loadTestsFromModule(tornado_test))
+    alltests.addTests(testLoader.loadTestsFromModule(transport_test))
     return alltests
 
 

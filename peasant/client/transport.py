@@ -16,11 +16,19 @@ from __future__ import annotations
 
 import logging
 import typing
+from urllib.parse import urlparse
 
 if typing.TYPE_CHECKING:
     from peasant.client.protocol import Peasant
 
 logger = logging.getLogger(__name__)
+
+
+def fix_address(address):
+    parsed_address = urlparse(address)
+    if parsed_address.path.endswith("/"):
+        parsed_address = parsed_address._replace(path=parsed_address.path[:-1])
+    return parsed_address.geturl()
 
 
 class Transport:
