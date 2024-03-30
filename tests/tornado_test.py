@@ -33,9 +33,28 @@ class TornadoTransportTestCase(TornadoAsyncTestCase):
                 f"http://localhost:{self.http_port()}")
 
     @gen_test
+    async def test_head(self):
+        try:
+            response = await self.transport.head("/head")
+        except Exception as e:
+            raise e
+        self.assertEqual(response.headers.get("head-response"),
+                         "Head method response")
+        self.assertEqual(response.headers.get("user-agent"),
+                         self.transport.user_agent)
+
+    @gen_test
     async def test_get(self):
         try:
             response = await self.transport.get("/")
         except Exception as e:
             raise e
-        self.assertEqual(response.body, b"IndexHandler output")
+        self.assertEqual(response.body, b"Get method output")
+
+    @gen_test
+    async def test_post(self):
+        try:
+            response = await self.transport.post("/post")
+        except Exception as e:
+            raise e
+        self.assertEqual(response.body, b"Post method output")

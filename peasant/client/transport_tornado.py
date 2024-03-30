@@ -15,7 +15,7 @@
 import copy
 import logging
 from peasant import get_version
-from peasant.client.transport import Transport
+from peasant.client.transport import fix_address, Transport
 from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
@@ -47,10 +47,10 @@ try:
         method = kwargs.get("method", "GET")
         path = kwargs.get("path", None)
         form_urlencoded = kwargs.get("form_urlencoded", False)
-        if not url.endswith("/"):
-            url = f"{url}/"
-        if path is not None and path != "/":
-            url = f"{url}{path}" % ()
+        if path is not None:
+            if not path.startswith("/"):
+                path = f"/{path}"
+            url = f"{url}{path}"
         request = HTTPRequest(url, method=method)
         if form_urlencoded:
             request.headers.add("Content-Type",
@@ -62,7 +62,7 @@ except ImportError:
 
 class TornadoTransport(Transport):
 
-    def __init__(self, bastion_address):
+    def __init__(self, bastion_address) -> None:
         super().__init__()
         if not tornado_installed:
             logger.warn("TornadoTransport cannot be used without tornado "
@@ -72,7 +72,7 @@ class TornadoTransport(Transport):
                         "\n\nInstalling tornado manually will also work.\n")
             raise NotImplementedError
         self._client = AsyncHTTPClient()
-        self._bastion_address = bastion_address
+        self._bastion_address = fix_address(bastion_address)
         self._directory = None
         self.user_agent = (f"Peasant/{get_version()}"
                            f"Tornado/{tornado_version}")
@@ -80,12 +80,13 @@ class TornadoTransport(Transport):
             'User-Agent': self.user_agent
         }
 
-    def _get_path(self, path, **kwargs):
+    def get_path(self, path, **kwargs) -> str:
         query_string = kwargs.get('query_string')
         if query_string:
             path = url_concat(path, query_string)
+        return path
 
-    def _get_headers(self, **kwargs):
+    def get_headers(self, **kwargs):
         headers = copy.deepcopy(self._basic_headers)
         _headers = kwargs.get('headers')
         if _headers:
@@ -93,10 +94,13 @@ class TornadoTransport(Transport):
         return headers
 
     async def get(self, path, **kwargs):
-        path = self._get_path(path, **kwargs)
+        path = self.get_path(path, **kwargs)
+        body = kwargs.get("body")
         request = get_tornado_request(self._bastion_address, path=path)
-        headers = self._get_headers(**kwargs)
+        headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        if body:
+            request.body = body
         try:
             result = await self._client.fetch(request)
         except HTTPClientError as error:
@@ -104,9 +108,10 @@ class TornadoTransport(Transport):
         return result
 
     async def head(self, path, **kwargs):
-        path = self._get_path(path, **kwargs)
-        request = get_tornado_request(path, method="HEAD")
-        headers = self._get_headers(**kwargs)
+        path = self.get_path(path, **kwargs)
+        request = get_tornado_request(self._bastion_address, path=path,
+                                      method="HEAD")
+        headers = self.get_headers(**kwargs)
         request.headers.update(headers)
         try:
             result = await self._client.fetch(request)
@@ -115,13 +120,13 @@ class TornadoTransport(Transport):
         return result
 
     async def post(self, path, **kwargs):
-        path = self._get_path(path, **kwargs)
-        form_data = kwargs.get("form_data", {})
-        request = get_tornado_request(path, method="POST",
-                                      form_urlencoded=True)
-        headers = self._get_headers(**kwargs)
+        path = self.get_path(path, **kwargs)
+        request = get_tornado_request(self._bastion_address, path=path,
+                                      method="POST")
+        headers = self.get_headers(**kwargs)
+        body = kwargs.get("body", [])
         request.headers.update(headers)
-        request.body = urlencode(form_data)
+        request.body = urlencode(body)
         try:
             result = await self._client.fetch(request)
         except HTTPClientError as error:

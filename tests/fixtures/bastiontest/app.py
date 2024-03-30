@@ -6,5 +6,7 @@ class BastiontestComponent(tornadoweb.TornadoComponent):
 
     def get_handlers(self):
         return [
-            (r"/", handlers.IndexHandler),
+            (r"/", handlers.GetHandler),
+            (r"/head", handlers.HeadHandler),
+            (r"/post", handlers.PostHandler),
         ]
