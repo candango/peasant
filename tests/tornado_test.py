@@ -14,13 +14,40 @@
 
 from firenado.testing import TornadoAsyncTestCase
 from firenado.launcher import ProcessLauncher
-from peasant.client.transport_tornado import TornadoTransport
+from peasant.client.transport import fix_address
+from peasant.client.transport_tornado import (get_tornado_request,
+                                              TornadoTransport)
 from tests import chdir_fixture_app, PROJECT_ROOT
 from tornado.testing import gen_test
+from unittest import TestCase
+
+
+class GetTornadoRequestTestCase(TestCase):
+
+    def test_get_tornado_request(self):
+        bastion_address = fix_address("http://bastion/")
+        request = get_tornado_request(bastion_address)
+        expected_url = "http://bastion"
+        self.assertEqual(expected_url, request.url)
+
+        request = get_tornado_request(bastion_address, path="resource")
+        expected_url = "http://bastion/resource"
+        self.assertEqual(expected_url, request.url)
+
+        request = get_tornado_request(bastion_address, path="/resource")
+        expected_url = "http://bastion/resource"
+        self.assertEqual(expected_url, request.url)
+
+        request = get_tornado_request(bastion_address, path="resource/")
+        expected_url = "http://bastion/resource/"
+        self.assertEqual(expected_url, request.url)
+
+        request = get_tornado_request(bastion_address, path="/resource/")
+        expected_url = "http://bastion/resource/"
+        self.assertEqual(expected_url, request.url)
 
 
 class TornadoTransportTestCase(TornadoAsyncTestCase):
-    """ Tornado based client test case. """
 
     def get_launcher(self) -> ProcessLauncher:
         application_dir = chdir_fixture_app("bastiontest")
