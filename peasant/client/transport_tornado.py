@@ -15,8 +15,7 @@
 import copy
 import logging
 from peasant import get_version
-from peasant.client.transport import fix_address, Transport
-from urllib.parse import urlencode
+from peasant.client.transport import concat_url, fix_address, Transport
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,6 @@ tornado_installed = False
 try:
     from tornado.httpclient import HTTPRequest
     from tornado import version as tornado_version
-    from tornado.httputil import url_concat
     from tornado.httpclient import AsyncHTTPClient, HTTPClientError
     tornado_installed = True
 
@@ -45,13 +43,11 @@ try:
         :return HTTPRequest:
         """
         method = kwargs.get("method", "GET")
-        path = kwargs.get("path", None)
         form_urlencoded = kwargs.get("form_urlencoded", False)
-        if path is not None:
-            if not path.startswith("/"):
-                path = f"/{path}"
-            url = f"{url}{path}"
         request = HTTPRequest(url, method=method)
+        body = kwargs.get("body", None)
+        if body:
+            request.body = body
         if form_urlencoded:
             request.headers.add("Content-Type",
                                 "application/x-www-form-urlencoded")
@@ -80,12 +76,6 @@ class TornadoTransport(Transport):
             'User-Agent': self.user_agent
         }
 
-    def get_path(self, path, **kwargs) -> str:
-        query_string = kwargs.get('query_string')
-        if query_string:
-            path = url_concat(path, query_string)
-        return path
-
     def get_headers(self, **kwargs):
         headers = copy.deepcopy(self._basic_headers)
         _headers = kwargs.get('headers')
@@ -93,24 +83,9 @@ class TornadoTransport(Transport):
             headers.update(_headers)
         return headers
 
-    async def get(self, path, **kwargs):
-        path = self.get_path(path, **kwargs)
-        body = kwargs.get("body")
-        request = get_tornado_request(self._bastion_address, path=path)
-        headers = self.get_headers(**kwargs)
-        request.headers.update(headers)
-        if body:
-            request.body = body
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            result = error.response
-        return result
-
-    async def head(self, path, **kwargs):
-        path = self.get_path(path, **kwargs)
-        request = get_tornado_request(self._bastion_address, path=path,
-                                      method="HEAD")
+    async def get(self, **kwargs):
+        url = concat_url(self._bastion_address, **kwargs)
+        request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
         try:
@@ -119,14 +94,24 @@ class TornadoTransport(Transport):
             result = error.response
         return result
 
-    async def post(self, path, **kwargs):
-        path = self.get_path(path, **kwargs)
-        request = get_tornado_request(self._bastion_address, path=path,
-                                      method="POST")
+    async def head(self, **kwargs):
+        url = concat_url(self._bastion_address, **kwargs)
+        kwargs["method"] = "HEAD"
+        request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
-        body = kwargs.get("body", [])
         request.headers.update(headers)
-        request.body = urlencode(body)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            result = error.response
+        return result
+
+    async def post(self, **kwargs):
+        url = concat_url(self._bastion_address, **kwargs)
+        kwargs["method"] = "POST"
+        request = get_tornado_request(url, **kwargs)
+        headers = self.get_headers(**kwargs)
+        request.headers.update(headers)
         try:
             result = await self._client.fetch(request)
         except HTTPClientError as error:

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import logging
 import typing
-from urllib.parse import parse_qsl, urlparse
+from urllib.parse import urlencode, urlparse
 
 if typing.TYPE_CHECKING:
     from peasant.client.protocol import Peasant
@@ -24,7 +24,7 @@ if typing.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def concat_url(url: str, **kwargs) -> str:
+def concat_url(url: str, **kwargs: dict) -> str:
     """ Concatenate a given url to a path, and query string if informed.
 
     :param str url: Base url
@@ -33,19 +33,19 @@ def concat_url(url: str, **kwargs) -> str:
     :key query_string: Query string to be added to the returned url
     """
     path = kwargs.get("path", None)
-    query_string = kwargs.get('query_string')
+    query_string = kwargs.get("query_string", None)
     if query_string:
         if isinstance(query_string, dict):
-            query_string = parse_qsl(query_string, keep_blank_values=True)
-        else:
+            query_string = urlencode(query_string)
+        if not isinstance(query_string, str):
             err = (f"'query_string' parameter should be dict, or string. "
                    f"Not {type(query_string)}")
             raise TypeError(err)
-        path = f"{path}?{path}"
-    if not url.endswith("/"):
-        url = f"{url}/"
+        path = f"{path}?{query_string}"
     if path is not None and path != "/":
-        url = f"{url}{path}"
+        if path.startswith("/"):
+            path = path[1:]
+        url = f"{url}/{path}"
     return url
 
 

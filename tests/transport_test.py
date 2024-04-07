@@ -12,11 +12,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from peasant.client.transport import fix_address
+from peasant.client.transport import concat_url, fix_address
 from unittest import TestCase
 
 
 class TransportTestCase(TestCase):
+
+    def test_concat_url(self):
+        bastion_address = fix_address("http://bastion/")
+        url = concat_url(bastion_address)
+        expected_url = "http://bastion"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="resource")
+        expected_url = "http://bastion/resource"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="/resource")
+        expected_url = "http://bastion/resource"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="resource/")
+        expected_url = "http://bastion/resource/"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="/resource/")
+        expected_url = "http://bastion/resource/"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="/resource",
+                         query_string={})
+        expected_url = "http://bastion/resource"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="/resource",
+                         query_string="abc=1")
+        expected_url = "http://bastion/resource?abc=1"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="/resource",
+                         query_string={"abc": 1})
+        expected_url = "http://bastion/resource?abc=1"
+        self.assertEqual(expected_url, url)
+
+        url = concat_url(bastion_address, path="/resource",
+                         query_string={"abc": 1, "def": 2})
+        expected_url = "http://bastion/resource?abc=1&def=2"
+        self.assertEqual(expected_url, url)
 
     def test_fix_address(self):
         address = "http://localhost"
