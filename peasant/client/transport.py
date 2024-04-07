@@ -16,12 +16,37 @@ from __future__ import annotations
 
 import logging
 import typing
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlparse
 
 if typing.TYPE_CHECKING:
     from peasant.client.protocol import Peasant
 
 logger = logging.getLogger(__name__)
+
+
+def concat_url(url: str, **kwargs) -> str:
+    """ Concatenate a given url to a path, and query string if informed.
+
+    :param str url: Base url
+    :param dict kwargs:
+        :key path: Path to be added to the returned url
+    :key query_string: Query string to be added to the returned url
+    """
+    path = kwargs.get("path", None)
+    query_string = kwargs.get('query_string')
+    if query_string:
+        if isinstance(query_string, dict):
+            query_string = parse_qsl(query_string, keep_blank_values=True)
+        else:
+            err = (f"'query_string' parameter should be dict, or string. "
+                   f"Not {type(query_string)}")
+            raise TypeError(err)
+        path = f"{path}?{path}"
+    if not url.endswith("/"):
+        url = f"{url}/"
+    if path is not None and path != "/":
+        url = f"{url}{path}"
+    return url
 
 
 def fix_address(address):

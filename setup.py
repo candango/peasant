@@ -59,6 +59,7 @@ setup(
     author_email=peasant.get_author_email(),
     extras_require={
         'all': resolve_requires("requirements/all.txt"),
+        'requests': resolve_requires("requirements/requests.txt"),
         'tornado': resolve_requires("requirements/tornado.txt"),
     },
     classifiers=[
