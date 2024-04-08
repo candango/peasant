@@ -42,30 +42,77 @@ class RequestsTransportTestCase(TornadoAsyncTestCase):
                 f"http://localhost:{self.http_port()}")
 
     @gen_test
-    async def test_head(self):
+    async def test_delete(self):
+        expected_body = "da body"
+        expected_content = b"Delete method output"
         try:
-            response = self.transport.head("/head")
+            response = self.transport.delete("/delete", data="da body")
         except Exception as e:
             raise e
-        self.assertEqual(response.headers.get("head-response"),
-                         "Head method response")
-        self.assertEqual(response.headers.get("user-agent"),
-                         self.transport.user_agent)
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.content)
 
     @gen_test
     async def test_get(self):
+        expected_content = b"Get method output"
         try:
             response = self.transport.get("/")
         except Exception as e:
             raise e
-        self.assertEqual(response.content, b"Get method output")
+        self.assertEqual(expected_content, response.content)
+
+    @gen_test
+    async def test_head(self):
+        expected_head_response = "Head method response"
+        try:
+            response = self.transport.head("/head")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_head_response,
+                         response.headers.get("head-response"))
+        self.assertEqual(self.transport.user_agent,
+                         response.headers.get("user-agent"))
+
+    @gen_test
+    async def test_options(self):
+        expected_body = "da body"
+        expected_content = b"Options method output"
+        try:
+            response = self.transport.options("/options")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.content)
+
+    @gen_test
+    async def test_patch(self):
+        expected_body = "da body"
+        expected_content = b"Patch method output"
+        try:
+            response = self.transport.patch("/patch", data="da body")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.content)
 
     @gen_test
     async def test_post(self):
         expected_body = "da body"
+        expected_content = b"Post method output"
         try:
             response = self.transport.post("/post", data="da body")
         except Exception as e:
             raise e
         self.assertEqual(expected_body, response.headers.get("request-body"))
-        self.assertEqual(response.content, b"Post method output")
+        self.assertEqual(expected_content, response.content)
+
+    @gen_test
+    async def test_put(self):
+        expected_body = "da body"
+        expected_content = b"Put method output"
+        try:
+            response = self.transport.put("/put", data="da body")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.content)

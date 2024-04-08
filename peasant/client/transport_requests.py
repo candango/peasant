@@ -15,7 +15,7 @@
 import copy
 import logging
 from peasant import get_version
-from peasant.client.transport import concat_url, Transport
+from peasant.client.transport import Transport
 
 logger = logging.getLogger(__name__)
 
@@ -58,19 +58,19 @@ class RequestsTransport(Transport):
             headers.update(_headers)
         return headers
 
-    def head(self, path, **kwargs):
-        url = concat_url(self._bastion_address, path, **kwargs)
+    def delete(self, path: str, **kwargs):
+        url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
         try:
-            with requests.head(url, **kwargs) as result:
-                result.raise_for_status()
+            result = requests.delete(url, **kwargs)
+            result.raise_for_status()
         except requests.HTTPError as error:
             raise error
         return result
 
     def get(self, path, **kwargs):
-        url = concat_url(self._bastion_address, path, **kwargs)
+        url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
         try:
@@ -80,12 +80,56 @@ class RequestsTransport(Transport):
             result = error.response
         return result
 
+    def head(self, path, **kwargs):
+        url = self.get_url(path, **kwargs)
+        headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
+        try:
+            result = requests.head(url, **kwargs)
+            result.raise_for_status()
+        except requests.HTTPError as error:
+            raise error
+        return result
+
+    def options(self, path, **kwargs):
+        url = self.get_url(path, **kwargs)
+        headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
+        try:
+            result = requests.options(url, **kwargs)
+            result.raise_for_status()
+        except requests.HTTPError as error:
+            raise error
+        return result
+
+    def patch(self, path, **kwargs):
+        url = self.get_url(path, **kwargs)
+        headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
+        try:
+            with requests.patch(url, **kwargs) as result:
+                result.raise_for_status()
+        except requests.HTTPError as error:
+            raise error
+        return result
+
     def post(self, path, **kwargs):
-        url = concat_url(self._bastion_address, path, **kwargs)
+        url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
         try:
             with requests.post(url, **kwargs) as result:
+                result.raise_for_status()
+        except requests.HTTPError as error:
+            raise error
+        return result
+
+    def put(self, path, **kwargs):
+        url = self.get_url(path, **kwargs)
+        headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
+        try:
+            with requests.put(url, **kwargs) as result:
                 result.raise_for_status()
         except requests.HTTPError as error:
             raise error

@@ -68,16 +68,34 @@ class Transport:
     def peasant(self, peasant: Peasant):
         self._peasant = peasant
 
-    def get(self, path, **kwargs):
+    def get_url(self, path: str, **kwargs: dict):
+        if (path.lower().startswith("http://") or
+                path.lower().startswith("https://")):
+            return concat_url(path, "", **kwargs)
+        return concat_url(self._bastion_address, path, **kwargs)
+
+    def delete(self, path: str, **kwargs: dict):
         raise NotImplementedError
 
-    def head(self, path, **kwargs):
+    def get(self, path: str, **kwargs: dict):
         raise NotImplementedError
 
-    def post(self, path, **kwargs):
+    def head(self, path: str, **kwargs: dict):
         raise NotImplementedError
 
-    def post_as_get(self, path, **kwargs):
+    def options(self, path: str, **kwargs: dict):
+        raise NotImplementedError
+
+    def patch(self, path: str, **kwargs: dict):
+        raise NotImplementedError
+
+    def post(self, path: str, **kwargs: dict):
+        raise NotImplementedError
+
+    def post_as_get(self, path: str, **kwargs: dict):
+        raise NotImplementedError
+
+    def put(self, path: str, **kwargs: dict):
         raise NotImplementedError
 
     def set_directory(self):
