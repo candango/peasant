@@ -24,15 +24,15 @@ if typing.TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-def concat_url(url: str, **kwargs: dict) -> str:
+def concat_url(url: str, path: str = None, **kwargs: dict) -> str:
     """ Concatenate a given url to a path, and query string if informed.
 
     :param str url: Base url
+    :param str path: Path to be added to the returned url
     :param dict kwargs:
         :key path: Path to be added to the returned url
     :key query_string: Query string to be added to the returned url
     """
-    path = kwargs.get("path", None)
     query_string = kwargs.get("query_string", None)
     if query_string:
         if isinstance(query_string, dict):

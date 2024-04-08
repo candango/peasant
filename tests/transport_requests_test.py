@@ -14,12 +14,13 @@
 
 from firenado.testing import TornadoAsyncTestCase
 from firenado.launcher import ProcessLauncher
-from peasant.client.transport_tornado import TornadoTransport
+from peasant.client.transport_requests import RequestsTransport
 from tests import chdir_fixture_app, PROJECT_ROOT
 from tornado.testing import gen_test
 
 
-class TornadoTransportTestCase(TornadoAsyncTestCase):
+class RequestsTransportTestCase(TornadoAsyncTestCase):
+    """ Tornado based client test case. """
 
     def get_launcher(self) -> ProcessLauncher:
         application_dir = chdir_fixture_app("bastiontest")
@@ -28,13 +29,22 @@ class TornadoTransportTestCase(TornadoAsyncTestCase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.transport = TornadoTransport(
+        # setting tests simplefilter to ignore because requests uses a
+        # keep-alive model, not closing sockets explicitly in many cases.
+        # with that will cause the ResourceWarning warn be displayed in testing
+        # as unittests will set warnings.simplefilter to default.
+        # See:
+        # - https://github.com/psf/requests/issues/3912#issuecomment-284328247
+        # - https://python.readthedocs.io/en/stable/library/warnings.html#updating-code-for-new-versions-of-python
+        import warnings
+        warnings.simplefilter("ignore")
+        self.transport = RequestsTransport(
                 f"http://localhost:{self.http_port()}")
 
     @gen_test
     async def test_head(self):
         try:
-            response = await self.transport.head(path="/head")
+            response = self.transport.head("/head")
         except Exception as e:
             raise e
         self.assertEqual(response.headers.get("head-response"),
@@ -45,15 +55,17 @@ class TornadoTransportTestCase(TornadoAsyncTestCase):
     @gen_test
     async def test_get(self):
         try:
-            response = await self.transport.get(path="/")
+            response = self.transport.get("/")
         except Exception as e:
             raise e
-        self.assertEqual(response.body, b"Get method output")
+        self.assertEqual(response.content, b"Get method output")
 
     @gen_test
     async def test_post(self):
+        expected_body = "da body"
         try:
-            response = await self.transport.post(path="/post", body="empty")
+            response = self.transport.post("/post", data="da body")
         except Exception as e:
             raise e
-        self.assertEqual(response.body, b"Post method output")
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(response.content, b"Post method output")

@@ -45,16 +45,11 @@ class RequestsTransport(Transport):
             raise NotImplementedError
         self._bastion_address = bastion_address
         self._directory = None
-        self.user_agent = (f"Peasant/{get_version()}"
+        self.user_agent = (f"Peasant/{get_version()} "
                            f"Requests/{requests.__version__}")
         self.basic_headers = {
             'User-Agent': self.user_agent
         }
-
-    def _get_path(self, path, **kwargs):
-        query_string = kwargs.get('query_string')
-        if query_string:
-            path = concat_url(path, query_string=query_string)
 
     def get_headers(self, **kwargs):
         headers = copy.deepcopy(self.basic_headers)
@@ -63,11 +58,35 @@ class RequestsTransport(Transport):
             headers.update(_headers)
         return headers
 
-    async def get(self, path, **kwargs):
-        url = concat_url(self._bastion_address, **kwargs)
+    def head(self, path, **kwargs):
+        url = concat_url(self._bastion_address, path, **kwargs)
         headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
         try:
-            result = requests.get(url, headers=headers)
+            with requests.head(url, **kwargs) as result:
+                result.raise_for_status()
+        except requests.HTTPError as error:
+            raise error
+        return result
+
+    def get(self, path, **kwargs):
+        url = concat_url(self._bastion_address, path, **kwargs)
+        headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
+        try:
+            result = requests.get(url, **kwargs)
+            result.raise_for_status()
         except requests.HTTPError as error:
             result = error.response
+        return result
+
+    def post(self, path, **kwargs):
+        url = concat_url(self._bastion_address, path, **kwargs)
+        headers = self.get_headers(**kwargs)
+        kwargs['headers'] = headers
+        try:
+            with requests.post(url, **kwargs) as result:
+                result.raise_for_status()
+        except requests.HTTPError as error:
+            raise error
         return result

@@ -15,15 +15,16 @@
 # limitations under the License.
 
 import unittest
-from tests import requests_test, tornado_test, transport_test
+from tests import (transport_requests_test, transport_test,
+                   transport_tornado_test)
 
 
 def suite():
     testLoader = unittest.TestLoader()
     alltests = unittest.TestSuite()
-    alltests.addTests(testLoader.loadTestsFromModule(requests_test))
-    alltests.addTests(testLoader.loadTestsFromModule(tornado_test))
+    alltests.addTests(testLoader.loadTestsFromModule(transport_requests_test))
     alltests.addTests(testLoader.loadTestsFromModule(transport_test))
+    alltests.addTests(testLoader.loadTestsFromModule(transport_tornado_test))
     return alltests
 
 

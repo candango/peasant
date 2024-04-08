@@ -70,7 +70,7 @@ class TornadoTransport(Transport):
         self._client = AsyncHTTPClient()
         self._bastion_address = fix_address(bastion_address)
         self._directory = None
-        self.user_agent = (f"Peasant/{get_version()}"
+        self.user_agent = (f"Peasant/{get_version()} "
                            f"Tornado/{tornado_version}")
         self._basic_headers = {
             'User-Agent': self.user_agent
@@ -83,19 +83,19 @@ class TornadoTransport(Transport):
             headers.update(_headers)
         return headers
 
-    async def get(self, **kwargs):
-        url = concat_url(self._bastion_address, **kwargs)
+    async def get(self, path: str, **kwargs: dict):
+        url = concat_url(self._bastion_address, path, **kwargs)
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
         try:
             result = await self._client.fetch(request)
         except HTTPClientError as error:
-            result = error.response
+            raise error
         return result
 
-    async def head(self, **kwargs):
-        url = concat_url(self._bastion_address, **kwargs)
+    async def head(self, path: str, **kwargs: dict):
+        url = concat_url(self._bastion_address, path, **kwargs)
         kwargs["method"] = "HEAD"
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
@@ -103,11 +103,11 @@ class TornadoTransport(Transport):
         try:
             result = await self._client.fetch(request)
         except HTTPClientError as error:
-            result = error.response
+            raise error
         return result
 
-    async def post(self, **kwargs):
-        url = concat_url(self._bastion_address, **kwargs)
+    async def post(self, path: str, **kwargs: dict):
+        url = concat_url(self._bastion_address, path, **kwargs)
         kwargs["method"] = "POST"
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
@@ -115,5 +115,5 @@ class TornadoTransport(Transport):
         try:
             result = await self._client.fetch(request)
         except HTTPClientError as error:
-            result = error.response
+            raise error
         return result
