@@ -46,7 +46,7 @@ class RequestsTransportTestCase(TornadoAsyncTestCase):
         expected_body = "da body"
         expected_content = b"Delete method output"
         try:
-            response = self.transport.delete("/delete", data="da body")
+            response = self.transport.delete("/delete")
         except Exception as e:
             raise e
         self.assertEqual(expected_body, response.headers.get("request-body"))

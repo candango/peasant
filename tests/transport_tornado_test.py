@@ -43,12 +43,45 @@ class TornadoTransportTestCase(TornadoAsyncTestCase):
                          self.transport.user_agent)
 
     @gen_test
+    async def test_delete(self):
+        expected_body = "da body"
+        expected_content = b"Delete method output"
+        try:
+            response = await self.transport.delete("/delete")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.body)
+
+    @gen_test
     async def test_get(self):
         try:
             response = await self.transport.get("/")
         except Exception as e:
             raise e
         self.assertEqual(response.body, b"Get method output")
+
+    @gen_test
+    async def test_options(self):
+        expected_body = "da body"
+        expected_content = b"Options method output"
+        try:
+            response = await self.transport.options("/options")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.body)
+
+    @gen_test
+    async def test_patch(self):
+        expected_body = "da body"
+        expected_content = b"Patch method output"
+        try:
+            response = await self.transport.patch("/patch", body="da body")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.body)
 
     @gen_test
     async def test_post(self):
@@ -59,3 +92,14 @@ class TornadoTransportTestCase(TornadoAsyncTestCase):
             raise e
         self.assertEqual(expected_body, response.headers.get("request-body"))
         self.assertEqual(response.body, b"Post method output")
+
+    @gen_test
+    async def test_put(self):
+        expected_body = "da body"
+        expected_content = b"Put method output"
+        try:
+            response = await self.transport.put("/put", body="da body")
+        except Exception as e:
+            raise e
+        self.assertEqual(expected_body, response.headers.get("request-body"))
+        self.assertEqual(expected_content, response.body)

@@ -43,8 +43,61 @@ try:
         :return HTTPRequest:
         """
         method = kwargs.get("method", "GET")
+
+        auth_username = kwargs.get("auth_username")
+        auth_password = kwargs.get("auth_password")
+        auth_mode = kwargs.get("auth_mode")
+        connect_timeout = kwargs.get("connect_timeout")
+        request_timeout = kwargs.get("request_timeout")
+        if_modified_since = kwargs.get("if_modified_since")
+        follow_redirects = kwargs.get("follow_redirects")
+        max_redirects = kwargs.get("max_redirects")
+        user_agent = kwargs.get("user_agent")
+        use_gzip = kwargs.get("use_gzip")
+        network_interface = kwargs.get("network_interface")
+        streaming_callback = kwargs.get("streaming_callback")
+        header_callback = kwargs.get("header_callback")
+        prepare_curl_callback = kwargs.get("prepare_curl_callback")
+        proxy_host = kwargs.get("proxy_host")
+        proxy_port = kwargs.get("proxy_port")
+        proxy_username = kwargs.get("proxy_username")
+        proxy_password = kwargs.get("proxy_password")
+        proxy_auth_mode = kwargs.get("proxy_auth_mode")
+        allow_nonstandard_methods = kwargs.get("allow_nonstandard_methods")
+        validate_cert = kwargs.get("validate_cert")
+        ca_certs = kwargs.get("ca_certs")
+        allow_ipv6 = kwargs.get("allow_ipv6")
+        client_key = kwargs.get("client_key")
+        client_cert = kwargs.get("client_cert")
+        body_producer = kwargs.get("body_producer")
+        expect_100_continue = kwargs.get("expect_100_continue")
+        decompress_response = kwargs.get("decompress_response")
+        ssl_options = kwargs.get("ssl_options")
+
         form_urlencoded = kwargs.get("form_urlencoded", False)
-        request = HTTPRequest(url, method=method)
+        request = HTTPRequest(
+                url, method=method, headers=None, body=None,
+                auth_username=auth_username, auth_password=auth_password,
+                auth_mode=auth_mode, connect_timeout=connect_timeout,
+                request_timeout=request_timeout,
+                if_modified_since=if_modified_since,
+                follow_redirects=follow_redirects, max_redirects=max_redirects,
+                user_agent=user_agent, use_gzip=use_gzip,
+                network_interface=network_interface,
+                streaming_callback=streaming_callback,
+                header_callback=header_callback,
+                prepare_curl_callback=prepare_curl_callback,
+                proxy_host=proxy_host, proxy_port=proxy_port,
+                proxy_username=proxy_username, proxy_password=proxy_password,
+                proxy_auth_mode=proxy_auth_mode,
+                allow_nonstandard_methods=allow_nonstandard_methods,
+                validate_cert=validate_cert, ca_certs=ca_certs,
+                allow_ipv6=allow_ipv6, client_key=client_key,
+                client_cert=client_cert, body_producer=body_producer,
+                expect_100_continue=expect_100_continue,
+                decompress_response=decompress_response,
+                ssl_options=ssl_options,
+                )
         body = kwargs.get("body", None)
         if body:
             request.body = body
@@ -83,8 +136,20 @@ class TornadoTransport(Transport):
             headers.update(_headers)
         return headers
 
+    async def delete(self, path: str, **kwargs: dict):
+        url = self.get_url(path, **kwargs)
+        kwargs["method"] = "DELETE"
+        request = get_tornado_request(url, **kwargs)
+        headers = self.get_headers(**kwargs)
+        request.headers.update(headers)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            raise error
+        return result
+
     async def get(self, path: str, **kwargs: dict):
-        url = concat_url(self._bastion_address, path, **kwargs)
+        url = self.get_url(path, **kwargs)
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
@@ -95,7 +160,7 @@ class TornadoTransport(Transport):
         return result
 
     async def head(self, path: str, **kwargs: dict):
-        url = concat_url(self._bastion_address, path, **kwargs)
+        url = self.get_url(path, **kwargs)
         kwargs["method"] = "HEAD"
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
@@ -106,9 +171,45 @@ class TornadoTransport(Transport):
             raise error
         return result
 
+    async def options(self, path: str, **kwargs: dict):
+        url = self.get_url(path, **kwargs)
+        kwargs["method"] = "OPTIONS"
+        request = get_tornado_request(url, **kwargs)
+        headers = self.get_headers(**kwargs)
+        request.headers.update(headers)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            raise error
+        return result
+
+    async def patch(self, path: str, **kwargs: dict):
+        url = self.get_url(path, **kwargs)
+        kwargs["method"] = "PATCH"
+        request = get_tornado_request(url, **kwargs)
+        headers = self.get_headers(**kwargs)
+        request.headers.update(headers)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            raise error
+        return result
+
     async def post(self, path: str, **kwargs: dict):
-        url = concat_url(self._bastion_address, path, **kwargs)
+        url = self.get_url(path, **kwargs)
         kwargs["method"] = "POST"
+        request = get_tornado_request(url, **kwargs)
+        headers = self.get_headers(**kwargs)
+        request.headers.update(headers)
+        try:
+            result = await self._client.fetch(request)
+        except HTTPClientError as error:
+            raise error
+        return result
+
+    async def put(self, path: str, **kwargs: dict):
+        url = self.get_url(path, **kwargs)
+        kwargs["method"] = "PUT"
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)

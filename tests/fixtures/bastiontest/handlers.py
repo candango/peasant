@@ -19,7 +19,7 @@ class HeadHandler(tornadoweb.TornadoHandler):
 class DeleteHandler(tornadoweb.TornadoHandler):
 
     def delete(self):
-        body = self.request.body
+        body = "da body"
         self.add_header("request-body", body)
         self.write("Delete method output")
 
