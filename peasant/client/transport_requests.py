@@ -59,78 +59,113 @@ class RequestsTransport(Transport):
         return headers
 
     def delete(self, path: str, **kwargs):
+        """ Sends a delete method with basic headers.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            result = requests.delete(url, **kwargs)
+        with requests.delete(url, **kwargs) as result:
             result.raise_for_status()
-        except requests.HTTPError as error:
-            raise error
         return result
 
     def get(self, path, **kwargs):
+        """Sends a GET request.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            result = requests.get(url, **kwargs)
+        with requests.get(url, **kwargs) as result:
             result.raise_for_status()
-        except requests.HTTPError as error:
-            result = error.response
         return result
 
     def head(self, path, **kwargs):
+        """Sends a HEAD request.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            result = requests.head(url, **kwargs)
+        with requests.head(url, **kwargs) as result:
             result.raise_for_status()
-        except requests.HTTPError as error:
-            raise error
         return result
 
     def options(self, path, **kwargs):
+        """Sends a OPTIONS request.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            result = requests.options(url, **kwargs)
+        with requests.options(url, **kwargs) as result:
             result.raise_for_status()
-        except requests.HTTPError as error:
-            raise error
         return result
 
     def patch(self, path, **kwargs):
+        """Sends a PATCH request.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            with requests.patch(url, **kwargs) as result:
-                result.raise_for_status()
-        except requests.HTTPError as error:
-            raise error
+        with requests.patch(url, **kwargs) as result:
+            result.raise_for_status()
         return result
 
     def post(self, path, **kwargs):
+        """Sends a POST request.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            with requests.post(url, **kwargs) as result:
-                result.raise_for_status()
-        except requests.HTTPError as error:
-            raise error
+        with requests.post(url, **kwargs) as result:
+            result.raise_for_status()
         return result
 
     def put(self, path, **kwargs):
+        """Sends a PUT request.
+
+        :param path: absolute or relative URL for the new
+        :class:`requests.Request` object.
+        :param **kwargs: Optional arguments that ``request`` takes.
+        :return: :class:`requests.Response <Response>` object
+        :rtype: requests.Response
+        """
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
-        try:
-            with requests.put(url, **kwargs) as result:
-                result.raise_for_status()
-        except requests.HTTPError as error:
-            raise error
+        with requests.put(url, **kwargs) as result:
+            result.raise_for_status()
         return result
