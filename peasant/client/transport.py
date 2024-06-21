@@ -50,7 +50,7 @@ def concat_url(url: str, path: str = None, **kwargs: dict) -> str:
                    f"Not {type(query_string)}")
             raise TypeError(err)
         path = f"{path}?{query_string}"
-    if path is not None and path != "/":
+    if path is not None and path != "" and path != "/":
         if path.startswith("/"):
             path = path[1:]
         url = f"{url}/{path}"

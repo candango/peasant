@@ -25,6 +25,11 @@ class TransportTestCase(TestCase):
         expected_url = "http://bastion"
         self.assertEqual(expected_url, url)
 
+        bastion_address = fix_address("http://bastion/")
+        url = concat_url(bastion_address, "")
+        expected_url = "http://bastion"
+        self.assertEqual(expected_url, url)
+
         url = concat_url(bastion_address, path="resource")
         expected_url = "http://bastion/resource"
         self.assertEqual(expected_url, url)
