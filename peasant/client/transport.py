@@ -23,6 +23,14 @@ if typing.TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+METHOD_DELETE = "DELETE"
+METHOD_GET = "GET"
+METHOD_HEAD = "HEAD"
+METHOD_OPTIONS = "OPTIONS"
+METHOD_PATCH = "PATCH"
+METHOD_POST = "POST"
+METHOD_PUT = "PUT"
+
 
 def concat_url(url: str, path: str = None, **kwargs: dict) -> str:
     """ Concatenate a given url to a path, and query string if informed.

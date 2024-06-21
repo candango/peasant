@@ -15,7 +15,10 @@
 import copy
 import logging
 from peasant import get_version
-from peasant.client.transport import concat_url, fix_address, Transport
+from peasant.client.transport import (fix_address, METHOD_DELETE, METHOD_GET,
+                                      METHOD_HEAD, METHOD_OPTIONS,
+                                      METHOD_PATCH, METHOD_POST, METHOD_PUT,
+                                      Transport)
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +26,7 @@ tornado_installed = False
 try:
     from tornado.httpclient import HTTPRequest
     from tornado import version as tornado_version
-    from tornado.httpclient import AsyncHTTPClient, HTTPClientError
+    from tornado.httpclient import AsyncHTTPClient
     tornado_installed = True
 
     def get_tornado_request(url, **kwargs):
@@ -42,7 +45,7 @@ try:
         Default is None.
         :return HTTPRequest:
         """
-        method = kwargs.get("method", "GET")
+        method = kwargs.get("method", METHOD_GET)
 
         auth_username = kwargs.get("auth_username")
         auth_password = kwargs.get("auth_password")
@@ -138,83 +141,55 @@ class TornadoTransport(Transport):
 
     async def delete(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
-        kwargs["method"] = "DELETE"
+        kwargs["method"] = METHOD_DELETE
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
 
     async def get(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
 
     async def head(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
-        kwargs["method"] = "HEAD"
+        kwargs["method"] = METHOD_HEAD
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
 
     async def options(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
-        kwargs["method"] = "OPTIONS"
+        kwargs["method"] = METHOD_OPTIONS
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
 
     async def patch(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
-        kwargs["method"] = "PATCH"
+        kwargs["method"] = METHOD_PATCH
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
 
     async def post(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
-        kwargs["method"] = "POST"
+        kwargs["method"] = METHOD_POST
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
 
     async def put(self, path: str, **kwargs: dict):
         url = self.get_url(path, **kwargs)
-        kwargs["method"] = "PUT"
+        kwargs["method"] = METHOD_PUT
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
-        try:
-            result = await self._client.fetch(request)
-        except HTTPClientError as error:
-            raise error
-        return result
+        return await self._client.fetch(request)
