@@ -140,6 +140,7 @@ class TornadoTransport(Transport):
         return headers
 
     async def delete(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_DELETE, **kwargs)
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_DELETE
         request = get_tornado_request(url, **kwargs)
@@ -148,6 +149,7 @@ class TornadoTransport(Transport):
         return await self._client.fetch(request)
 
     async def get(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_GET, **kwargs)
         url = self.get_url(path, **kwargs)
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
@@ -155,6 +157,7 @@ class TornadoTransport(Transport):
         return await self._client.fetch(request)
 
     async def head(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_HEAD, **kwargs)
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_HEAD
         request = get_tornado_request(url, **kwargs)
@@ -163,6 +166,7 @@ class TornadoTransport(Transport):
         return await self._client.fetch(request)
 
     async def options(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_OPTIONS, **kwargs)
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_OPTIONS
         request = get_tornado_request(url, **kwargs)
@@ -171,6 +175,7 @@ class TornadoTransport(Transport):
         return await self._client.fetch(request)
 
     async def patch(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_PATCH, **kwargs)
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_PATCH
         request = get_tornado_request(url, **kwargs)
@@ -179,6 +184,7 @@ class TornadoTransport(Transport):
         return await self._client.fetch(request)
 
     async def post(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_POST, **kwargs)
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_POST
         request = get_tornado_request(url, **kwargs)
@@ -187,6 +193,7 @@ class TornadoTransport(Transport):
         return await self._client.fetch(request)
 
     async def put(self, path: str, **kwargs: dict):
+        kwargs = self.update_kwargs(METHOD_PUT, **kwargs)
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_PUT
         request = get_tornado_request(url, **kwargs)

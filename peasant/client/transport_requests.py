@@ -60,11 +60,6 @@ class RequestsTransport(Transport):
             headers.update(_headers)
         return headers
 
-    def update_kwargs(self, method, **kwargs):
-        if self.kwargs_updater is None:
-            return kwargs
-        return self.kwargs_updater(method, **kwargs)
-
     def delete(self, path: str, **kwargs):
         """ Sends a delete method with basic headers.
 
@@ -74,7 +69,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs("DELETE", **kwargs)
+        kwargs = self.update_kwargs("DELETE", **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
@@ -91,7 +86,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs(METHOD_GET, **kwargs)
+        kwargs = self.update_kwargs(METHOD_GET, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
@@ -108,7 +103,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs(METHOD_HEAD, **kwargs)
+        kwargs = self.update_kwargs(METHOD_HEAD, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
@@ -125,7 +120,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs(METHOD_OPTIONS, **kwargs)
+        kwargs = self.update_kwargs(METHOD_OPTIONS, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
@@ -142,7 +137,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs(METHOD_PATCH, **kwargs)
+        kwargs = self.update_kwargs(METHOD_PATCH, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
@@ -159,7 +154,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs(METHOD_POST, **kwargs)
+        kwargs = self.update_kwargs(METHOD_POST, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
@@ -176,7 +171,7 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        self.update_kwargs(METHOD_PUT, **kwargs)
+        kwargs = self.update_kwargs(METHOD_PUT, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
