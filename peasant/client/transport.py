@@ -15,10 +15,10 @@
 from __future__ import annotations
 
 import logging
-import typing
+import typing as t
 from urllib.parse import urlencode, urlparse
 
-if typing.TYPE_CHECKING:
+if t.TYPE_CHECKING:
     from peasant.client.protocol import Peasant
 
 logger = logging.getLogger(__name__)
@@ -66,7 +66,16 @@ def fix_address(address):
 
 class Transport:
 
+    _kwargs_updater: t.Callable = None
     _peasant: Peasant
+
+    @property
+    def kwargs_updater(self) -> t.Callable:
+        return self._kwargs_updater
+
+    @kwargs_updater.setter
+    def kwargs_updater(self, callable: t.Callable):
+        self._kwargs_updater = callable
 
     @property
     def peasant(self) -> Peasant:
@@ -114,3 +123,8 @@ class Transport:
 
     def is_registered(self):
         raise NotImplementedError
+
+    def update_kwargs(self, method, **kwargs):
+        if self.kwargs_updater is None:
+            return kwargs
+        return self.kwargs_updater(method, **kwargs)

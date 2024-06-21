@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from peasant.client.transport import concat_url, fix_address
+from peasant.client.transport import (concat_url, fix_address, METHOD_POST,
+                                      Transport)
 from unittest import TestCase
 
 
@@ -75,3 +76,16 @@ class TransportTestCase(TestCase):
         expected_address = "http://localhost/a/path"
         fixed_address = fix_address(address)
         self.assertEqual(expected_address, fixed_address)
+
+    def test_kwargs_updater(self):
+        transport = Transport()
+
+        def kwargs_updater(method, **kwargs):
+            kwargs['test'] = method
+            return kwargs
+
+        kwargs = {}
+        transport.kwargs_updater = kwargs_updater
+        kwargs = transport.update_kwargs(METHOD_POST, **kwargs)
+        self.assertTrue("test" in kwargs)
+        self.assertEqual(METHOD_POST, kwargs['test'])
