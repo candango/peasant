@@ -140,63 +140,141 @@ class TornadoTransport(Transport):
         return headers
 
     async def delete(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_DELETE, **kwargs)
+        """Executes a DELETE request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_DELETE
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)
 
     async def get(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_GET, **kwargs)
+        """Executes a GET request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
+        kwargs["method"] = METHOD_GET
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)
 
     async def head(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_HEAD, **kwargs)
+        """Executes a HEAD request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_HEAD
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)
 
     async def options(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_OPTIONS, **kwargs)
+        """Executes a OPTIONS request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_OPTIONS
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)
 
     async def patch(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_PATCH, **kwargs)
+        """Executes a PATCH request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_PATCH
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)
 
     async def post(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_POST, **kwargs)
+        """Executes a POST request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_POST
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)
 
     async def put(self, path: str, **kwargs: dict):
-        kwargs = self.update_kwargs(METHOD_PUT, **kwargs)
+        """Executes a PUT request, asynchronously returning an
+        `tornado.HTTPResponse`.
+
+        This method returns a `tornado.web.Future` whose result is an
+        `tornado.web.HTTPResponse`. By default, the ``Future`` will raise an
+        `tornado.web.HTTPError` if the request returned a non-200 response code
+        (other errors may also be raised if the server could not be
+        contacted). Instead, if ``raise_error`` is set to False, the
+        response will always be returned regardless of the response
+        code.
+        """
         url = self.get_url(path, **kwargs)
         kwargs["method"] = METHOD_PUT
         request = get_tornado_request(url, **kwargs)
         headers = self.get_headers(**kwargs)
         request.headers.update(headers)
+        kwargs = self.update_kwargs(**kwargs)
         return await self._client.fetch(request)

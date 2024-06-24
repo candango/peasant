@@ -61,7 +61,7 @@ class RequestsTransport(Transport):
         return headers
 
     def delete(self, path: str, **kwargs):
-        """ Sends a delete method with basic headers.
+        """ Send a delete method with basic headers.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -69,16 +69,16 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs("DELETE", **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_DELETE, **kwargs)
         with requests.delete(url, **kwargs) as result:
             result.raise_for_status()
         return result
 
     def get(self, path, **kwargs):
-        """Sends a GET request.
+        """Send a GET request.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -86,16 +86,16 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs(METHOD_GET, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_GET, **kwargs)
         with requests.get(url, **kwargs) as result:
             result.raise_for_status()
         return result
 
     def head(self, path, **kwargs):
-        """Sends a HEAD request.
+        """Send a HEAD request.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -103,16 +103,16 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs(METHOD_HEAD, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_HEAD, **kwargs)
         with requests.head(url, **kwargs) as result:
             result.raise_for_status()
         return result
 
     def options(self, path, **kwargs):
-        """Sends a OPTIONS request.
+        """Send a OPTIONS request.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -120,16 +120,16 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs(METHOD_OPTIONS, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_OPTIONS, **kwargs)
         with requests.options(url, **kwargs) as result:
             result.raise_for_status()
         return result
 
     def patch(self, path, **kwargs):
-        """Sends a PATCH request.
+        """Send a PATCH request.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -137,16 +137,16 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs(METHOD_PATCH, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_PATCH, **kwargs)
         with requests.patch(url, **kwargs) as result:
             result.raise_for_status()
         return result
 
     def post(self, path, **kwargs):
-        """Sends a POST request.
+        """Send a POST request.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -154,16 +154,16 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs(METHOD_POST, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_POST, **kwargs)
         with requests.post(url, **kwargs) as result:
             result.raise_for_status()
         return result
 
     def put(self, path, **kwargs):
-        """Sends a PUT request.
+        """Send a PUT request.
 
         :param path: absolute or relative URL for the new
         :class:`requests.Request` object.
@@ -171,10 +171,10 @@ class RequestsTransport(Transport):
         :return: :class:`requests.Response <Response>` object
         :rtype: requests.Response
         """
-        kwargs = self.update_kwargs(METHOD_PUT, **kwargs)
         url = self.get_url(path, **kwargs)
         headers = self.get_headers(**kwargs)
         kwargs['headers'] = headers
+        kwargs = self.update_kwargs(METHOD_PUT, **kwargs)
         with requests.put(url, **kwargs) as result:
             result.raise_for_status()
         return result
