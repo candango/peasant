@@ -28,4 +28,4 @@ initiatives. Available under the
 This website and all documentation are licensed under
 [Creative Commons 3.0](http://creativecommons.org/licenses/by/3.0/).
 
-Copyright © 2020-2024 Flavio Garcia
+Copyright © 2020-2025 Flavio Garcia
