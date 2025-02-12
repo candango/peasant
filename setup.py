@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2020-2024 Flavio Garcia
+# Copyright 2020-2025 Flavio Garcia
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,17 +63,17 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries :: Application Frameworks"
     ],
     packages=find_packages(),
     package_dir={'peasant': "peasant"},
-    python_requires=">= 3.8",
+    python_requires=">= 3.9",
     include_package_data=True,
     install_requires=resolve_requires("requirements/basic.txt")
 )
